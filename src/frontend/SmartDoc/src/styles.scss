@@ -1,4 +1,4 @@
-
+@use './app/components/buttons';
 :root {
 
   --primary-color: #3b82f6;       
@@ -47,4 +47,3 @@ body {
   margin: 0;
 }
 
-@import './app/components/buttons';
