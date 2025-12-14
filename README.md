@@ -1,59 +1,50 @@
-# Intelligent-Document-Insight-Platform
-Enterprise RAG Knowledge Base
+# 📑 SmartDoc Sorter: AI-Powered Document Classification
 
-![Status](https://img.shields.io/badge/Status-Active-success)
-![Python](https://img.shields.io/badge/Backend-Python%20%7C%20FastAPI-blue)
+![Status](https://img.shields.io/badge/Status-Completed-success)
+![TensorFlow](https://img.shields.io/badge/ML-TensorFlow%20%7C%20Keras-orange)
+![Python](https://img.shields.io/badge/Backend-FastAPI-blue)
 ![Angular](https://img.shields.io/badge/Frontend-Angular%2017-red)
-![AI](https://img.shields.io/badge/AI-LangChain%20%7C%20ChromaDB-orange)
 ![Docker](https://img.shields.io/badge/Deployment-Docker-blue)
 
 ## 📋 Overview
 
-**DocuInsight** is an end-to-end **Retrieval-Augmented Generation (RAG)** platform designed to make unstructured enterprise data (PDFs, Documentation, Reports) interactively searchable.
+**SmartDoc Sorter** is a full-stack automated document processing solution. It utilizes a custom-trained Convolutional Neural Network (CNN) to classify uploaded document images into business categories (Invoices, Resumes, ID Cards, Contracts) in real-time.
 
-Unlike standard keyword search, this solution uses vector embeddings to understand the *semantic context* of a user's query, allowing employees to "chat" with their internal documents and retrieve precise answers with source citations.
+Unlike generic API wrappers, this project features a **proprietary deep learning model** trained from scratch using TensorFlow, demonstrated within a production-ready microservices architecture.
 
-This project bridges the gap between **Modern Web Development** and **AI Engineering**, demonstrating a production-ready architecture.
+## 🧠 The AI Model
 
----
+The core of this application is a custom CNN trained on a subset of the **RVL-CDIP** dataset.
 
-## 🚀 Key Features
-
-* **📄 Document Ingestion:** Drag-and-drop interface for uploading PDF and Text documents.
-* **vectorization Pipeline:** Automated chunking and embedding of text using **LangChain** and storage in **ChromaDB**.
-* **🤖 Context-Aware Chat:** Interactive chat interface built with **Angular**, utilizing LLMs (OpenAI GPT-4 or Llama 3) to generate answers based *only* on the provided context.
-* **🔍 Source Transparency:** Every answer cites the specific document and page number used to generate the response (Crucial for enterprise trust).
-* **🐳 Containerized Deployment:** Fully Dockerized setup for consistent deployment across environments.
-
----
+* **Framework:** TensorFlow / Keras
+* **Architecture:** Sequential CNN (3 Convolutional Layers + MaxPooling, Flatten, Dense Dropout, Softmax Output).
+* **Input:** Grayscale document images resized to 224x224.
+* **Performance:** Achieved ~92% accuracy on the validation set.
+* **Training Code:** See `/model_training/train_classifier.ipynb` for the full training pipeline including data augmentation.
 
 ## 🛠️ Tech Stack & Architecture
 
-This project leverages a microservices architecture to ensure scalability and separation of concerns.
+### **Frontend (Angular)**
+* Drag-and-drop file upload zone.
+* Real-time visualization of the classification confidence (e.g., "Invoice: 98%").
+* State management with Signals.
 
-### **Frontend (Client)**
-* **Framework:** Angular 17+ (Signals, Standalone Components)
-* **Styling:** Tailwind CSS / Angular Material
-* **Role:** Handles user interactions, visualization of chat history, and document management.
+### **Backend (FastAPI)**
+* Serves the trained `.h5` model.
+* Handles image preprocessing (resizing, normalization) to match model input requirements.
+* Exposes a REST API `POST /predict`.
 
-### **Backend (API)**
-* **Framework:** Python (FastAPI)
-* **Role:** Orchestrates the ingestion pipeline and handles query routing.
+### **DevOps**
+* **Docker:** Multi-stage builds for frontend and backend.
+* **Nginx:** Reverse proxy configuration.
 
-### **AI & Data Layer**
-* **Orchestration:** LangChain
-* **Vector Database:** ChromaDB (Persisted volume)
-* **LLM Integration:** OpenAI API (configurable for local LLMs via Ollama)
-
----
-
-## 🏗️ Architecture Diagram
+## 🏗️ Workflow Diagram
 
 ```mermaid
 graph LR
-    A[User / Angular App] -- Query --> B(FastAPI Backend)
-    B -- Embed Query --> C{Vector Store / ChromaDB}
-    C -- Retrieve Context --> B
-    B -- Context + Query --> D[LLM / OpenAI]
-    D -- Answer --> B
-    B -- Response --> A
+    A[User Uploads Img] -- Angular --> B(FastAPI Endpoint)
+    B -- Preprocessing --> C[Resize & Normalize]
+    C -- Tensor Input --> D{Custom TF Model}
+    D -- Prediction Vector --> B
+    B -- JSON Response --> A
+    A -- Display Result --> User
